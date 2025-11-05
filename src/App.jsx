@@ -3,10 +3,14 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import Sidebar from './components/Sidebar';
 import ChatWindow from './components/ChatWindow';
+import ChatWidget from './components/ChatWidget';
 
 const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const widgetOnly = params.get('widget') === '1';
+
   const [activeView, setActiveView] = useState('user'); // 'user' | 'agent'
   const [conversationId, setConversationId] = useState('conv-1');
   const [conversations, setConversations] = useState({
@@ -32,12 +36,20 @@ function App() {
     }));
   };
 
+  if (widgetOnly) {
+    return (
+      <div className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+        <ChatWidget />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
       <Header />
       <Hero />
 
-      <main className="relative z-10 mx-auto -mt-16 max-w-6xl px-6 pb-24">
+      <main className="relative z-10 mx-auto -mt-16 max-w-6xl px-6 pb-32">
         <div className="mb-6 text-center">
           <h2 className="text-2xl font-semibold text-white/90">Live Chat Console</h2>
           <p className="text-sm text-white/60">Switch between customer and agent to experience both sides</p>
@@ -60,8 +72,11 @@ function App() {
         </div>
       </main>
 
+      {/* Floating customer chat widget is available site-wide */}
+      <ChatWidget />
+
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-center text-xs text-white/50">
-        Built with a glassmorphic aesthetic. This demo simulates messaging locally.
+        Built with a glassmorphic aesthetic. This demo simulates messaging locally. To embed the floating chat in any site, use an iframe to this page with ?widget=1.
       </footer>
     </div>
   );
